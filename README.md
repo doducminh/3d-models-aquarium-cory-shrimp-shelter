@@ -9,21 +9,25 @@ In bằng **PETG** (ngâm nước lâu dài; PLA thuỷ phân, giòn dần theo 
 tả bằng hai trường độ sâu, mặt đá ngoài luôn hướng lên, còn trần hang dựng bằng
 hàm khoảng cách nên nghiêng đúng 42° ở mọi chỗ.
 
-> ## ⚠️ TẠM DỪNG IN — bộ STL hiện tại KHÔNG LẮP ĐƯỢC (31/08/2026)
+> ### Khe hở giữa thân hang và khung mỏng hơn thiết kế — 0,3 mm chứ không phải 2,0
 >
-> Đo lại trên chính sáu file trong repo này: **thân hang và khung chắn đất trong
-> cùng một thư mục không lồng vào nhau được.** Thân hang của `goc-be-phai` chỉ lồng
-> khít vào khung của `goc-be-trai` và ngược lại; với khung cùng thư mục thì hai vật
-> nằm **hai đầu bể**. Bản `doc-kinh-truoc` gần đối xứng nên vẫn *gần* khớp, nhưng
-> đo ra **208 mm³ đâm nhau** thay vì khe hở 2,0 mm như thiết kế.
+> Thiết kế khai khe nhấc **2,0 mm**. Đo lại trên chính sáu file STL trong repo,
+> ở đúng tư thế lắp, thì chỗ hẹp nhất chỉ còn:
 >
-> Nguyên nhân: hai bộ dựng xuất mesh theo hai quy ước tay ngược nhau, nên phép biến
-> đổi duy nhất lồng được chúng là một phép **phản chiếu** — mà vật rắn thì không
-> phản chiếu được. Mọi phép kiểm từng-chi-tiết đều sạch (kín khối, không support,
-> gcode đúng) vì không phép nào chạy **hai chi tiết cùng lúc**.
+> | bộ | khe thật, chỗ hẹp nhất |
+> |---|---|
+> | `goc-be-trai/` | +0,61 mm |
+> | `goc-be-phai/` | +0,33 mm |
+> | `doc-kinh-truoc/` | **−0,18 mm** (17 trên 19 336 đỉnh chạm nhẹ) |
 >
-> **Đừng in bộ này cho tới khi cảnh báo này biến mất.** Trang xem 3D bên dưới vẫn
-> đúng — nó dựng hình bằng JS, không đọc STL.
+> **Cả hai bộ đã in thật và lắp được** — thả thân hang từ trên xuống vào lòng
+> khung không cần lực. Nên đây không phải lỗi chặn in, mà là **biên an toàn mỏng
+> hơn bảng số nói**: nếu máy bạn in hơi phồng, hoặc bạn in PETG co ngót nhiều,
+> thì bộ `doc-kinh-truoc` có thể phải rà nhẹ mép trước khi lắp.
+>
+> (Bản cảnh báo trước ở chỗ này nói bộ STL "không lắp được" và ghi 208 mm³ đâm
+> nhau — số đó đo bằng phép biến đổi lắp sai, đã dựng lại phép đo và không tái
+> hiện được; xem HANDOFF điểm mù 96.)
 
 
 **[Xem mô hình 3D →](viewer/index.html)**
