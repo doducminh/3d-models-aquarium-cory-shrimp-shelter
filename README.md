@@ -113,6 +113,26 @@ Ngâm nước **48 giờ** xả mùi trước khi thả vào hồ đang có cá.
 dựng hình bằng JS nên chỉnh được kiểu hang, hướng cửa, cỡ in… và xem số đo đổi
 theo ngay.
 
+## Cửa hang KHÔNG chặn được cá lớn — đo rồi, và nó là giới hạn cứng
+
+Nếu bạn định dùng hang này để cá nhỏ trốn một con cá lớn hơn, đọc mục này trước.
+
+Cửa cao 22,4 mm. Nó **không** hạ xuống được bao nhiêu, vì chính con cá chuột đặt
+ra sàn: thân nó cao 14,4 mm và phải có 2 mm khe mỗi bên — gai ngực nó **khoá lại
+khi hoảng**, kẹt cửa là chết cá. Sàn cứng vì thế là **18,4 mm**, và toàn bộ chỗ
+co giãn của cửa chỉ là 22,4 → 18,9 mm.
+
+Con betta trong hồ thử nghiệm đo được **cao thân 15,0 mm** (cụp vây). Nó mỏng hơn
+cả cái sàn 18,4 mm, nên **không tồn tại cái cửa nào vừa cho cá chuột qua vừa chặn
+nó** — hai loài chỉ cách nhau 0,6 mm bề cao thân. Thu nhỏ cửa là ngõ cụt, không
+phải chuyện tinh chỉnh.
+
+Muốn chặn thì phải chặn bằng **hình thái cửa** chứ không phải cỡ cửa: cá chuột là
+cá đáy, chui khe là bản năng; cá tầng giữa vây dài thì tránh ống dài tối có khúc
+quẹo. Viewer có sẵn bốn kiểu cửa để xem — `sau` (rèm đá che), `ben` (khe ngang
+xuyên sườn), `duoi` (cửa quay xuống nền). **Các file STL ở đây đều là kiểu `kinh`
+(cửa nhìn thẳng), tức KHÔNG có hàng rào nào.**
+
 ## Trạng thái
 
 ✅ **Đã in thật bộ `doc-kinh-truoc/` và bộ `goc-be-phai/`** — lắp vào hồ đạt, chủ

@@ -609,7 +609,13 @@ const P = {
                     // lúc hoảng nó KHOÁ gai — kẹt cửa là chết cá.
   SNAIL: 18,        // Ø vỏ ốc nerita định thả — ốc phải chui lọt cửa thì
                     // mới vào gặm rêu mặt kính trong buồng được
-  FISHBIG_H: 25,    // [todo] cao thân con cá lớn cần chặn
+  FISHBIG_H: 15,    // ĐO THẬT 31/08/2026 — cao thân con betta, cụp vây, không
+                    // tính vây. Số này treo [todo] từ v9 và tạm để 25; con 25
+                    // ấy là lý do cả dự án tưởng cửa vòm kín CHẶN được cá lớn.
+                    // 15 < HEAD = CORYH + 2·CLEAR = 18,4 ⇒ KHÔNG TỒN TẠI cái
+                    // cửa nào vừa cho cá chuột qua vừa chặn con betta này:
+                    // hai con chỉ cách nhau 0,6 mm bề cao thân (14,4 và 15,0).
+                    // Đừng đề xuất thu nhỏ cửa nữa — xem HANDOFF điểm mù 94.
   FISHBIG_W: 11,    // [todo] ngang thân con cá lớn (cá dẹt hai bên nên nhỏ hơn cao)
   SHRIMP: 4.5,      // ngang thân tép — chủ dự án KHÔNG nuôi, giữ để tham chiếu
   CLEAR: 2.0,       // khe hở quanh con vật
@@ -867,6 +873,11 @@ const P = {
                     // cho cùng nét gân mà sờ vào không đứt tay.
   JAGR: 0.30,       // bán kính làm cùn nếp gấp của đường bao đá, mm
   SCREE: 1,         // nón đá vụn dưới chỗ trần sập — chỉ kiểu ho-sut-sap
+  MMARG: 4.0,       // LỖ VÒM CAO HƠN CON CÁ CHUỘT BAO NHIÊU. Đây là toàn bộ
+                    // chỗ co giãn của cửa: cao lỗ = HEAD + MMARG, mà HEAD =
+                    // CORYH + 2·CLEAR = 18,4 là SÀN CỨNG (cá chuột phải lọt,
+                    // và ốc nerita Ø18 cũng phải lọt). Hạ MMARG là cách DUY
+                    // NHẤT chặn con cá lớn bằng hình học — xem HANDOFF v23.
   LINTEL: 6.0,      // bề đá phủ trên vòm miệng
   MOUTH_W: 1.0,     // hệ số bề ngang miệng, LẤY MỐC LÀ MẶT CẮT CON CÁ:
                     //   1,0 = vừa đủ con cá panda + gai ngực + khe hở
@@ -1263,7 +1274,7 @@ function deriveCore() {
   const PEAK = K === 'khe-nut' ? 8 : (K === 'karst' ? 6 : (K === 'ho-sut-sap' ? 7 : 4));
   d.PEAK = PEAK;
   if (d.vom) {
-    d.MH  = d.HEAD + 4;                  // cao lỗ vòm
+    d.MH  = d.HEAD + P.MMARG;            // cao lỗ vòm
     d.CRT = d.CRB + d.MH;
     d.HT  = Math.max(d.HMIN, d.CRT + P.LINTEL);
   } else {
