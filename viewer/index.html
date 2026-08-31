@@ -769,6 +769,14 @@ const P = {
   FCLR: 2.0,        // khe giữa khung và hang — phải nhấc hang lên lọt
   FFOOT: 7.0,       // vành chân khung, xoè RA NGOÀI
   FFT: 1.8,         // bề dày vành chân
+  FTRW: 1.6,        // MÁNG DẰN — bề dày môi ngoài (= min_structural_wall 1,6)
+  FTRH: 18.0,       // MÁNG DẰN — cao môi, tính từ mặt trên vành chân.
+                    //   18 chứ không phải 12: đỉnh môi lên 19,8 mm, vẫn nằm
+                    //   SÂU dưới mặt nền 35 mm nên không lộ ra, mà lòng máng
+                    //   chứa được 9,6 cm3 thay vì 6,0. Trần của nó là mặt nền,
+                    //   không phải chiều cao khung.
+  FTHD: 5.0,        // bề ngang lỗ bám nền khoét trên môi máng
+  FTHS: 15.0,       // bước lỗ bám nền dọc đường khung
 
   /* --- RĂNG LƯỚI Ở DẢI CHẠM KÍNH (chủ dự án 27/08) ---
      Hai đầu khung vuốt về y = 0 nên chúng ÁP PHẲNG vào mặt kính: nhìn trực
@@ -2894,7 +2902,7 @@ function buildFrame() {
   const NA = 3, NB = 3;
   const rTop = Math.min(P.FRND, P.FW / 2 - 0.05);
   const rFoot = Math.min(P.FFR, P.FFT * 0.8);
-  const profile = (h, kfoot) => {
+  const profile = (h, kfoot, lipk) => {
     const FOOT = P.FFOOT * (kfoot === undefined ? 1 : kfoot);
     const q = [];
     q.push([0, 0]);
@@ -2909,24 +2917,44 @@ function buildFrame() {
       q.push([P.FW - rTop + rTop * Math.sin(a), h - rTop + rTop * Math.cos(a)]);
     }
     if (FOOT > 0.05) {
+      /* MÁNG DẰN. Vành chân có thêm MÔI NGOÀI cao FTRH, biến nó thành một
+         máng hở nóc. Lý do là phép đo chứ không phải trực giác: khung nặng
+         20,9 g khô nhưng chỉ **4,5 gf dưới nước** (PETG 1,27 nên nổi mất 79%),
+         và lực làm đổ nó chỉ 2,2 gf trên sàn cứng, 0,36 gf trên nền hạt. Nống
+         vành chân rộng ra — cách nghĩ đầu tiên — sửa CÁNH TAY ĐÒN, mà cánh tay
+         đòn đã 17 mm rồi; số gần bằng không là TRỌNG LƯỢNG. Dày vành chân từ
+         1,8 lên 8 mm chỉ đưa 3,4 gf thành 4,6 gf, tức gần như vô ích.
+         Máng thì đổ sỏi vào được (nền ngập nước ~0,95 g/cm³ so với 0,27 của
+         PETG), và khi lấp nền thì cát nằm TRONG một cái hộp chứ không chỉ đè
+         lên một tấm phẳng — muốn nhấc khung là phải nhấc cả khối cát ấy.
+         MÔI NẰM TRONG MÉP NGOÀI CŨ (t = FW + FOOT) nên hộp bao KHÔNG đổi:
+         bề sâu vẫn 59,8 / 60. Đó là điều kiện bắt buộc — dự án đã bỏ hai bản
+         khung vì đoán rộng thêm vài milimét. */
+      const lip = P.FTRH * (lipk === undefined ? 1 : lipk);
+      const FI = Math.max(FOOT - P.FTRW, 0);
       q.push([P.FW, P.FFT + P.FLR]);
-      for (let k = 1; k <= NB; k++) {             // mặt trên vành chân, vuốt LÕM
+      for (let k = 1; k <= NB; k++) {             // LÒNG máng, vuốt LÕM
         const t = k / NB;
-        q.push([P.FW + (FOOT - rFoot) * t, P.FFT + P.FLR * (1 - t) * (1 - t)]);
+        q.push([P.FW + FI * t, P.FFT + P.FLR * (1 - t) * (1 - t)]);
       }
-      for (let k = 1; k <= NA; k++) {             // bo mũi vành chân
+      q.push([P.FW + FI, P.FFT + lip]);           // mặt trong môi máng, đi lên
+      for (let k = 1; k <= NA; k++) {             // bo mũi môi máng
         const a = k / NA * Math.PI / 2;
         q.push([P.FW + FOOT - rFoot + rFoot * Math.sin(a),
-                P.FFT - rFoot + rFoot * Math.cos(a)]);
+                P.FFT + lip - rFoot + rFoot * Math.cos(a)]);
       }
       q.push([P.FW + FOOT, 0]);
     } else {
+      /* +2 chứ không phải +0: nhánh này VỐN ĐÃ thiếu một điểm so với nhánh
+         trên (16 so với 17) — NP lấy từ profile(10,1) tức nhánh trên, nên một
+         nút có FOOT ≤ 0,05 là lệch cả vòng quét. Nó im lặng vì kf nhỏ nhất
+         hiện tại vẫn chưa chạm ngưỡng ấy. Máng thêm một điểm nữa, thành +2. */
       q.push([P.FW, 0]);
-      for (let k = 1; k <= NB + NA; k++) q.push([P.FW, 0]);   // giữ đủ số điểm
+      for (let k = 1; k <= NB + NA + 2; k++) q.push([P.FW, 0]);   // giữ đủ số điểm
     }
     return q;
   };
-  const NP = profile(10, 1).length;
+  const NP = profile(10, 1, 1).length;
   /* diện tích mặt cắt (shoelace) — dùng để ước nhựa, không ước bằng hộp bao */
   const dienTich = (q) => {
     let a2 = 0;
@@ -2961,11 +2989,34 @@ function buildFrame() {
     const t = Math.abs(du) / L;                 // 1 = đường chạy dọc u
     kf.push(t * t * (3 - 2 * t));
   }
+  /* HỆ SỐ MÔI MÁNG — MỘT MẢNG, TÍNH MỘT LẦN, KHÔNG PHẢI HÀM CỦA RIÊNG TỪNG NÚT.
+     Lấy thẳng theo kf của nút thì môi TẮT rồi BẬT lại dọc đường (kf lên xuống
+     ở chỗ đường quặt), để lại một mẩu môi lơ lửng không dính vào đâu —
+     `layer_scan()` bắt được đúng một ĐẢO NỔI 2 mm² ở z = 8,55 trên hai trong
+     ba bản. MIN TRƯỢT xoá hẳn mọi đoạn ngắn hơn cửa sổ, rồi làm trơn cho môi
+     vuốt lên dần. Cửa sổ đếm bằng NÚT nhưng neo theo MILIMÉT (CLAUDE.md: cửa
+     sổ tính bằng số nút thì co lại khi tăng độ mịn). */
+  const Wmm = 4.0;
+  let buoc = 0;
+  for (let i = 1; i < n; i++) buoc += Math.hypot(inn[i][0] - inn[i - 1][0], yw[i] - yw[i - 1]);
+  const W = Math.max(2, Math.round(Wmm / Math.max(buoc / (n - 1), 1e-6)));
+  const klRaw = kf.map(k => Math.max(0, Math.min(1,
+      (P.FFOOT * k - (P.FTRW + 2.0)) / 2.0)));
+  const klMin = klRaw.map((_, i) => {
+    let v = 1;
+    for (let j = Math.max(0, i - W); j <= Math.min(n - 1, i + W); j++) v = Math.min(v, klRaw[j]);
+    return v;
+  });
+  const kl = klMin.map((_, i) => {
+    let a2 = 0, c = 0;
+    for (let j = Math.max(0, i - W); j <= Math.min(n - 1, i + W); j++) { a2 += klMin[j]; c++; }
+    return a2 / c;
+  });
   const ring = [], hs = [];
   let volCat = 0;
   for (let i = 0; i < n; i++) {
     const h = hAt(i); hs.push(h);
-    const q = profile(h, kf[i]);
+    const q = profile(h, kf[i], kl[i]);
     volCat += dienTich(q);
     const idx = [];
     for (let k = 0; k < NP; k++)
@@ -2984,7 +3035,7 @@ function buildFrame() {
   for (const e of [0, n - 1]) {
     const c = push(inn[e][0] + nrm[e][0] * P.FW / 2, yw[e] + nrm[e][1] * P.FW / 2,
       Math.min(P.FFT, 1.0) / 2);
-    const q = profile(hs[e], kf[e]);
+    const q = profile(hs[e], kf[e], kl[e]);
     for (let k = 0; k < NP; k++) {
       const k2 = (k + 1) % NP;
       if (e === 0) IA.push(c, ring[e][k2], ring[e][k]);
@@ -3101,7 +3152,7 @@ function buildFrame() {
   for (const h of hs) { if (h < hMin) hMin = h; if (h > hMax) hMax = h; }
   return { V: VA, C: CA, I: IA, mass: vol / 1000 * 1.27, first: len * (P.FW + P.FFOOT),
     H: hMax, HMIN: hMin, hs: hs, len: len, inner: inn.map((q, i) => [q[0], yw[i]]),
-    teeth: nTeeth, rang: rangDS, nrm: nrm, kf: kf, NP: NP };
+    teeth: nTeeth, rang: rangDS, nrm: nrm, kf: kf, kl: kl, NP: NP };
 }
 
 /* ==========================================================================
